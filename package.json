@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "f:debugger": "pnpm --filter mini-app-debugger",
+    "f:debugger": "pnpm --filter debugger",
     "f:server": "pnpm --filter debug-server",
     "f:viewer": "pnpm --filter app-viewer"
   },

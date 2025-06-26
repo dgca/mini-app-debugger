@@ -146,7 +146,7 @@ importers:
         specifier: ^3.25.20
         version: 3.25.67
 
-  packages/mini-app-debugger:
+  packages/debugger:
     dependencies:
       '@radix-ui/react-dialog':
         specifier: ^1.1.14
