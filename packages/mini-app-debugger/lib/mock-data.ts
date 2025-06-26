@@ -1,0 +1,88 @@
+import { ConsoleLogEntry } from "./types";
+
+export const mockConsoleData: ConsoleLogEntry[] = [
+  {
+    id: "1",
+    timestamp: Date.now() - 5000,
+    level: "log",
+    message: "App initialized successfully",
+    args: [],
+  },
+  {
+    id: "2",
+    timestamp: Date.now() - 4000,
+    level: "info",
+    message: "User authentication completed",
+    args: [{ userId: "user123", email: "john@example.com" }],
+  },
+  {
+    id: "3",
+    timestamp: Date.now() - 3000,
+    level: "warn",
+    message: "API rate limit approaching",
+    args: ["Requests: 95/100"],
+  },
+  {
+    id: "4",
+    timestamp: Date.now() - 2000,
+    level: "error",
+    message: "Failed to fetch user profile",
+    args: [new Error("Network timeout"), { userId: "user123" }],
+  },
+  {
+    id: "5",
+    timestamp: Date.now() - 1000,
+    level: "debug",
+    message: "Component rendered",
+    args: [{ component: "UserProfile", props: { id: "user123" } }],
+  },
+  {
+    id: "6",
+    timestamp: Date.now() - 500,
+    level: "log",
+    message: "Processing form submission",
+    args: [{ formData: { name: "John Doe", age: 30 } }],
+  },
+  {
+    id: "7",
+    timestamp: Date.now() - 5000,
+    level: "log",
+    message: "App initialized successfully",
+    args: [],
+  },
+  {
+    id: "8",
+    timestamp: Date.now() - 4000,
+    level: "info",
+    message: "User authentication completed",
+    args: [{ userId: "user123", email: "john@example.com" }],
+  },
+  {
+    id: "9",
+    timestamp: Date.now() - 3000,
+    level: "warn",
+    message: "API rate limit approaching",
+    args: ["Requests: 95/100"],
+  },
+  {
+    id: "10",
+    timestamp: Date.now() - 2000,
+    level: "error",
+    message: "Failed to fetch user profile",
+    args: [new Error("Network timeout"), { userId: "user123" }],
+  },
+  {
+    id: "11",
+    timestamp: Date.now() - 1000,
+    level: "debug",
+    message: "Component rendered",
+    args: [{ component: "UserProfile", props: { id: "user123" } }],
+  },
+  {
+    id: "12",
+    timestamp: Date.now() - 500,
+    level: "log",
+    message: "Processing form submission",
+    args: [{ formData: { name: "John Doe", age: 30 } }],
+  },
+];

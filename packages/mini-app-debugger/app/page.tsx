@@ -1,10 +1,24 @@
-import { Button } from "@/components/ui/button";
+"use client";
+import { useQueryState } from "nuqs";
+import { Home } from "@/components/Home/Home";
+import { Logs } from "@/components/Logs/Logs";
+import { Network } from "@/components/Network/Network";
 
-export default function Home() {
+export default function App() {
+  const [tab] = useQueryState("tab");
+
   return (
     <div>
-      <h1>Hello World</h1>
-      <Button>Click me</Button>
+      {(() => {
+        switch (tab) {
+          case "logs":
+            return <Logs />;
+          case "network":
+            return <Network />;
+          default:
+            return <Home />;
+        }
+      })()}
     </div>
   );
 }
