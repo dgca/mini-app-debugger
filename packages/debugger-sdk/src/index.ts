@@ -43,21 +43,30 @@ export interface DebugMessage {
   data: ConsoleLogEntry | NetworkRequestEntry;
 }
 
+// Helper function to check if we're in a browser environment
+function isBrowser(): boolean {
+  return (
+    typeof window !== "undefined" && typeof window.document !== "undefined"
+  );
+}
+
 let isInitialized = false;
 let config: DebuggerSDKConfig | null = null;
 let websocket: WebSocket | null = null;
 let sessionId: string = "";
 
-// Store original methods
-const originalConsole = {
-  log: console.log,
-  info: console.info,
-  warn: console.warn,
-  error: console.error,
-  debug: console.debug,
-};
+// Store original methods - only if in browser
+const originalConsole = isBrowser()
+  ? {
+      log: console.log,
+      info: console.info,
+      warn: console.warn,
+      error: console.error,
+      debug: console.debug,
+    }
+  : null;
 
-const originalFetch = window.fetch;
+const originalFetch = isBrowser() ? window.fetch : null;
 
 function generateId(): string {
   return (
@@ -71,7 +80,7 @@ function generateSessionId(): string {
 }
 
 function connectWebSocket(): void {
-  if (!config) return;
+  if (!isBrowser() || !config) return;
 
   try {
     const url = new URL("/ws", config.debugServer);
@@ -106,7 +115,7 @@ function connectWebSocket(): void {
 }
 
 function sendMessage(message: DebugMessage): void {
-  if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+  if (!isBrowser() || !websocket || websocket.readyState !== WebSocket.OPEN) {
     return;
   }
 
@@ -119,10 +128,15 @@ function sendMessage(message: DebugMessage): void {
 
 function createConsoleProxy(level: LogLevel): (...args: unknown[]) => void {
   return (...args: unknown[]) => {
-    // Call original console method
-    originalConsole[level](...args);
+    // Call original console method if available
+    if (originalConsole && originalConsole[level]) {
+      originalConsole[level](...args);
+    } else {
+      // Fallback to current console method
+      console[level](...args);
+    }
 
-    if (!isInitialized || !config) return;
+    if (!isBrowser() || !isInitialized || !config) return;
 
     // Create log entry
     const logEntry: ConsoleLogEntry = {
@@ -148,6 +162,8 @@ function createConsoleProxy(level: LogLevel): (...args: unknown[]) => void {
 function getStackTrace():
   | { file?: string; line?: number; column?: number }
   | undefined {
+  if (!isBrowser()) return undefined;
+
   try {
     const stack = new Error().stack;
     if (!stack) return undefined;
@@ -177,6 +193,10 @@ function createFetchProxy(): typeof fetch {
     input: RequestInfo | URL,
     init?: RequestInit,
   ): Promise<Response> => {
+    if (!isBrowser() || !originalFetch) {
+      throw new Error("Fetch is not available in this environment");
+    }
+
     const startTime = Date.now();
     const requestId = generateId();
 
@@ -278,6 +298,8 @@ function createFetchProxy(): typeof fetch {
 }
 
 function setupErrorHandling(): void {
+  if (!isBrowser()) return;
+
   // Global error handler
   window.addEventListener("error", (event) => {
     if (!isInitialized || !config) return;
@@ -328,6 +350,14 @@ export function initMiniAppDebuggerSDK({
   appName,
   enabled,
 }: DebuggerSDKConfig): void {
+  // Early return if not in browser environment
+  if (!isBrowser()) {
+    console.log(
+      "[Debugger SDK] Not in browser environment, skipping initialization",
+    );
+    return;
+  }
+
   if (isInitialized) {
     console.warn("[Debugger SDK] Already initialized");
     return;
@@ -372,17 +402,22 @@ export function initMiniAppDebuggerSDK({
 }
 
 export function destroyMiniAppDebuggerSDK(): void {
-  if (!isInitialized) return;
+  if (!isBrowser() || !isInitialized) return;
 
   console.log("[Debugger SDK] Destroying SDK");
 
   // Restore original methods
-  console.log = originalConsole.log;
-  console.info = originalConsole.info;
-  console.warn = originalConsole.warn;
-  console.error = originalConsole.error;
-  console.debug = originalConsole.debug;
-  window.fetch = originalFetch;
+  if (originalConsole) {
+    console.log = originalConsole.log;
+    console.info = originalConsole.info;
+    console.warn = originalConsole.warn;
+    console.error = originalConsole.error;
+    console.debug = originalConsole.debug;
+  }
+
+  if (originalFetch) {
+    window.fetch = originalFetch;
+  }
 
   // Close WebSocket
   if (websocket) {
@@ -397,10 +432,21 @@ export function destroyMiniAppDebuggerSDK(): void {
 }
 
 export function getSDKInfo() {
+  if (!isBrowser()) {
+    return {
+      isInitialized: false,
+      sessionId: "",
+      config: null,
+      connected: false,
+      environment: "server",
+    };
+  }
+
   return {
     isInitialized,
     sessionId,
     config: config ? { ...config } : null,
     connected: websocket?.readyState === WebSocket.OPEN,
+    environment: "browser",
   };
 }

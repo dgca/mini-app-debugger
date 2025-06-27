@@ -6,7 +6,7 @@ export function Logs() {
     useDebugServer();
 
   return (
-    <div className="h-[calc(100vh-60px)] flex flex-col">
+    <div className="h-[calc(100vh)] flex flex-col">
       <div className="sticky top-0 z-10 flex items-center justify-between p-3 bg-gray-50 border-b">
         <div className="flex items-center gap-2">
           <div
