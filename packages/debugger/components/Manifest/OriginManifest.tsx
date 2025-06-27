@@ -42,20 +42,57 @@ export default function OriginManifest({ origin }: OriginManifestProps) {
       'frame.name': 'Mini App name. Max 32 characters.',
       'frame.homeUrl': 'Default launch URL. Max 1024 characters.',
       'frame.iconUrl': 'Icon image URL. Max 1024 characters. Should be 1024x1024px PNG, no alpha.',
+      'frame.imageUrl': '[DEPRECATED] Default image to show if shared in a feed. Max 1024 characters. Image must be 3:2 aspect ratio.',
+      'frame.buttonTitle': '[DEPRECATED] Default button title to show if shared in a feed. Max 32 characters.',
+      'frame.splashImageUrl': 'URL of image to show on loading screen. Must be 200x200px.',
+      'frame.splashBackgroundColor': 'Hex color code to use on loading screen.',
+      'frame.webhookUrl': 'URL to which clients will POST events. Max 1024 characters. Must be set if the Mini App uses notifications.',
       'frame.subtitle': 'Short description under app name. Max 30 characters, no emojis or special characters.',
       'frame.description': 'Promotional message for Mini App Page. Max 170 characters, no emojis or special characters.',
+      'frame.screenshotUrls': 'Visual previews of the app. Portrait, 1284 x 2778, max 3 screenshots.',
       'frame.primaryCategory': 'Primary category of app. Must be one of: games, social, finance, utility, productivity, health-fitness, news-media, music, shopping, education, developer-tools, entertainment, art-creativity.',
       'frame.tags': 'Descriptive tags for filtering/search. Up to 5 tags, max 20 characters each. Lowercase, no spaces, no special characters.',
-      'frame.splashBackgroundColor': 'Hex color code to use on loading screen.',
-      'frame.webhookUrl': 'URL to which clients will POST events. Max 1024 characters.',
+      'frame.heroImageUrl': 'Promotional display image. 1200 x 630px (1.91:1).',
+      'frame.tagline': 'Marketing tagline. Max 30 characters.',
       'frame.ogTitle': 'Open Graph title. Max 30 characters.',
       'frame.ogDescription': 'Open Graph description. Max 100 characters.',
-      'frame.heroImageUrl': 'Promotional display image. Should be 1200 x 630px (1.91:1).',
-      'frame.ogImageUrl': 'Open Graph promotional image. Should be 1200 x 630px (1.91:1) PNG.',
-      'frame.splashImageUrl': 'URL of image to show on loading screen. Should be 200x200px.',
+      'frame.ogImageUrl': 'Open Graph promotional image. 1200 x 630px (1.91:1) PNG.',
+      'frame.noindex': 'Whether to exclude the Mini App from search results. true = exclude, false = include (default).',
+      'frame.requiredChains': 'CAIP-2 IDs of required chains. Only chains listed in chainList are supported.',
+      'frame.requiredCapabilities': 'List of required capabilities. Each entry must be a path to an SDK method.',
+      'frame.canonicalDomain': 'Canonical domain for the frame application. Max 1024 characters. Must be a valid domain name without protocol, port, or path.',
       'accountAssociation': 'Account association data containing header, payload, and signature for domain verification.'
     };
     return descriptions[field] || 'Field description not available.';
+  };
+
+  const getAllPossibleFields = (): string[] => {
+    return [
+      'frame.version',
+      'frame.name', 
+      'frame.homeUrl',
+      'frame.iconUrl',
+      'frame.imageUrl',
+      'frame.buttonTitle',
+      'frame.splashImageUrl',
+      'frame.splashBackgroundColor',
+      'frame.webhookUrl',
+      'frame.subtitle',
+      'frame.description',
+      'frame.screenshotUrls',
+      'frame.primaryCategory',
+      'frame.tags',
+      'frame.heroImageUrl',
+      'frame.tagline',
+      'frame.ogTitle',
+      'frame.ogDescription',
+      'frame.ogImageUrl',
+      'frame.noindex',
+      'frame.requiredChains',
+      'frame.requiredCapabilities',
+      'frame.canonicalDomain',
+      'accountAssociation'
+    ];
   };
 
   const validateManifest = (data: unknown): ValidationResult[] => {
@@ -358,6 +395,11 @@ export default function OriginManifest({ origin }: OriginManifestProps) {
                           return manifestData?.[r.field] !== undefined;
                         });
 
+                        // Calculate unused fields
+                        const allPossibleFields = getAllPossibleFields();
+                        const presentFieldNames = presentFields.map(f => f.field);
+                        const unusedFields = allPossibleFields.filter(field => !presentFieldNames.includes(field));
+
                         return (
                           <>
                             {/* Validation Table */}
@@ -436,6 +478,32 @@ export default function OriginManifest({ origin }: OriginManifestProps) {
                                     </li>
                                   ))}
                                 </ul>
+                              </div>
+                            )}
+
+                            {/* Unused Fields */}
+                            {unusedFields.length > 0 && (
+                              <div className="bg-gray-50 border border-gray-200 rounded p-3">
+                                <h5 className="text-sm font-medium text-gray-800 mb-2">Unused Optional Fields:</h5>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                  {unusedFields.map((field) => (
+                                    <Tooltip key={field}>
+                                      <TooltipTrigger asChild>
+                                        <div className="text-xs text-gray-600 cursor-help underline decoration-dotted p-2 hover:bg-gray-100 rounded">
+                                          {field}
+                                          {field.includes('imageUrl') || field.includes('buttonTitle') ? (
+                                            <span className="ml-1 text-orange-600 text-xs">[DEPRECATED]</span>
+                                          ) : null}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="max-w-xs text-xs">
+                                          {getFieldDescription(field)}
+                                        </p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </>
