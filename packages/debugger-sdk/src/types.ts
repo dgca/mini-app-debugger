@@ -13,15 +13,32 @@ export interface ConsoleLogEntry {
   }
 }
 
-export interface DebugMessage {
-  type: 'console_log'
-  sessionId: string
-  data: ConsoleLogEntry
+export interface NetworkRequestEntry {
+  id: string
+  timestamp: number
+  url: string
+  method: string
+  headers: Record<string, string>
+  body?: string
+  response?: {
+    status: number
+    statusText: string
+    headers: Record<string, string>
+    body: string
+  }
+  error?: string
+  duration?: number
 }
 
-export interface ClientInfo {
-  sessionId: string
+export interface DebuggerSDKConfig {
+  debugServer: string
+  sessionId?: string
   appName?: string
-  userAgent?: string
-  connectedAt: number
+  enabled?: boolean
+}
+
+export interface DebugMessage {
+  type: 'console_log' | 'network_request' | 'error'
+  sessionId: string
+  data: ConsoleLogEntry | NetworkRequestEntry
 }

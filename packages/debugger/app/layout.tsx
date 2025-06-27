@@ -1,4 +1,4 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar/Sidebar";
 import { NuqsAdapter } from "nuqs/adapters/next";
 import "./globals.css";
@@ -10,10 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <NuqsAdapter>
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex-1 max-w-screen-2xl mx-auto">
-              <SidebarTrigger />
-              {children}
-            </main>
+            <main className="flex-1 max-w-screen-2xl mx-auto">{children}</main>
           </SidebarProvider>
         </NuqsAdapter>
       </body>

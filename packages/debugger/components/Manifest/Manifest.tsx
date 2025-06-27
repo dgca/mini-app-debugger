@@ -1,9 +1,8 @@
-import NetworkViewer from "@/components/Network/NetworkViewer";
+import ManifestViewer from "@/components/Manifest/ManifestViewer";
 import { useDebugServer } from "@/hooks/useDebugServer";
 
-export function Network() {
-  const { allNetworkRequests, isConnected, connectionStatus, clearNetworkRequests } =
-    useDebugServer();
+export function Manifest() {
+  const { uniqueOrigins, isConnected, connectionStatus } = useDebugServer();
 
   return (
     <div className="h-[calc(100vh-60px)] flex flex-col">
@@ -21,7 +20,7 @@ export function Network() {
         <span className="text-xs text-gray-500">ws://localhost:3002</span>
       </div>
       <div className="flex-1">
-        <NetworkViewer entries={allNetworkRequests} onClear={clearNetworkRequests} />
+        <ManifestViewer origins={uniqueOrigins} />
       </div>
     </div>
   );

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini App Debugger SDK Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            margin: 10px 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mini App Debugger SDK Test</h1>
+    
+    <div id="status">
+        <strong>SDK Status:</strong> <span id="sdk-status">Not initialized</span>
+    </div>
+
+    <div class="test-section">
+        <h3>Initialize SDK</h3>
+        <button onclick="initSDK()">Initialize SDK</button>
+        <button onclick="destroySDK()">Destroy SDK</button>
+        <button onclick="checkStatus()">Check Status</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Console Logging Tests</h3>
+        <button onclick="testConsoleLog()">console.log</button>
+        <button onclick="testConsoleWarn()">console.warn</button>
+        <button onclick="testConsoleError()">console.error</button>
+        <button onclick="testConsoleInfo()">console.info</button>
+        <button onclick="testConsoleDebug()">console.debug</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Network Request Tests</h3>
+        <button onclick="testFetchSuccess()">Successful Request</button>
+        <button onclick="testFetchError()">Failed Request</button>
+        <button onclick="testFetchJSON()">JSON Request</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Error Tests</h3>
+        <button onclick="testUncaughtError()">Uncaught Error</button>
+        <button onclick="testPromiseRejection()">Promise Rejection</button>
+    </div>
+
+    <script type="module">
+        // Import the SDK
+        import { initMiniAppDebuggerSDK, destroyMiniAppDebuggerSDK, getSDKInfo } from './dist/index.mjs';
+        
+        // Make functions available globally for buttons
+        window.initMiniAppDebuggerSDK = initMiniAppDebuggerSDK;
+        window.destroyMiniAppDebuggerSDK = destroyMiniAppDebuggerSDK;
+        window.getSDKInfo = getSDKInfo;
+
+        window.initSDK = () => {
+            initMiniAppDebuggerSDK({
+                debugServer: "http://localhost:3001",
+                appName: "Test Mini App"
+            });
+            updateStatus();
+        };
+
+        window.destroySDK = () => {
+            destroyMiniAppDebuggerSDK();
+            updateStatus();
+        };
+
+        window.checkStatus = () => {
+            updateStatus();
+        };
+
+        window.updateStatus = () => {
+            const info = getSDKInfo();
+            document.getElementById('sdk-status').textContent = 
+                `Initialized: ${info.isInitialized}, Connected: ${info.connected}, Session: ${info.sessionId}`;
+        };
+
+        // Console Tests
+        window.testConsoleLog = () => {
+            console.log('This is a test log message', { data: 'test', number: 42 });
+        };
+
+        window.testConsoleWarn = () => {
+            console.warn('This is a test warning message');
+        };
+
+        window.testConsoleError = () => {
+            console.error('This is a test error message', new Error('Test error'));
+        };
+
+        window.testConsoleInfo = () => {
+            console.info('This is a test info message');
+        };
+
+        window.testConsoleDebug = () => {
+            console.debug('This is a test debug message');
+        };
+
+        // Network Tests
+        window.testFetchSuccess = async () => {
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+                const data = await response.json();
+                console.log('Fetch success:', data);
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        };
+
+        window.testFetchError = async () => {
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/invalid-endpoint');
+                const data = await response.json();
+                console.log('Unexpected success:', data);
+            } catch (error) {
+                console.error('Expected fetch error:', error);
+            }
+        };
+
+        window.testFetchJSON = async () => {
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: 'Test Post',
+                        body: 'This is a test post',
+                        userId: 1
+                    })
+                });
+                const data = await response.json();
+                console.log('POST success:', data);
+            } catch (error) {
+                console.error('POST error:', error);
+            }
+        };
+
+        // Error Tests
+        window.testUncaughtError = () => {
+            setTimeout(() => {
+                throw new Error('This is an uncaught error for testing');
+            }, 100);
+        };
+
+        window.testPromiseRejection = () => {
+            Promise.reject(new Error('This is an unhandled promise rejection for testing'));
+        };
+
+        // Initialize status on load
+        updateStatus();
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { Home, Network, SquareChevronRight } from "lucide-react";
+import { Network, SquareChevronRight, FileText } from "lucide-react";
 
 import {
   Sidebar,
@@ -13,11 +13,6 @@ import {
 
 const items = [
   {
-    title: "Home",
-    value: "home",
-    icon: Home,
-  },
-  {
     title: "Logs",
     value: "logs",
     icon: SquareChevronRight,
@@ -26,6 +21,11 @@ const items = [
     title: "Network",
     value: "network",
     icon: Network,
+  },
+  {
+    title: "Manifest",
+    value: "manifest",
+    icon: FileText,
   },
 ];
 

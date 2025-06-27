@@ -1,8 +1,8 @@
 "use client";
 import { useQueryState } from "nuqs";
-import { Home } from "@/components/Home/Home";
 import { Logs } from "@/components/Logs/Logs";
 import { Network } from "@/components/Network/Network";
+import { Manifest } from "@/components/Manifest/Manifest";
 
 export default function App() {
   const [tab] = useQueryState("tab");
@@ -15,8 +15,10 @@ export default function App() {
             return <Logs />;
           case "network":
             return <Network />;
+          case "manifest":
+            return <Manifest />;
           default:
-            return <Home />;
+            return <Logs />;
         }
       })()}
     </div>
